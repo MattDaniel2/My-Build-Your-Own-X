@@ -4,7 +4,7 @@ describe 'database' do
     end
     def run_script(commands)
         raw_output = nil
-        IO.popen("/Users/matt/Developer/My-Build-Your-Own-X/build_your_own_database/src/main", "r+") do |pipe|
+        IO.popen("/Users/matt/Developer/My-Build-Your-Own-X/build_your_own_database/src/main test.db", "r+") do |pipe|
             commands.each do |command|
                 pipe.puts command
             end

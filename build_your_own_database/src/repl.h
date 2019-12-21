@@ -150,7 +150,7 @@ void db_close(Table* table) {
     uint32_t num_additional_rows = table->num_rows % ROWS_PER_PAGE;
     if (num_additional_rows > 0) {
         uint32_t page_num = num_full_pages;
-        if (pager->pages[page_num] == NULL) {
+        if (pager->pages[page_num] != NULL) {
             pager_flush(pager, page_num, num_additional_rows * ROW_SIZE);
             free(pager->pages[page_num]);
             pager->pages[page_num] = NULL;
@@ -252,7 +252,7 @@ void* get_page(Pager* pager, uint32_t page_num) {
         }
 
         if (page_num <= num_pages) {
-            lseek(pager->file_descriptor, page_num* PAGE_SIZE, SEEK_SET);
+            lseek(pager->file_descriptor, page_num * PAGE_SIZE, SEEK_SET);
             ssize_t bytes_read = read(pager->file_descriptor, page, PAGE_SIZE);
             if (bytes_read == -1) {
                 printf("Error reading file: %d\n", errno);
@@ -290,12 +290,14 @@ Pager* pager_open(const char* filename) {
     Pager* pager = malloc(sizeof(Pager));
     pager->file_descriptor = fd;
     pager->file_length = file_length;
+
     for (uint32_t i=0; i < TABLE_MAX_PAGES; i++) {
         pager->pages[i] = NULL;
     }
 
     return pager;
 }
+
 
 Table* db_open(const char* filename) {
     Pager* pager = pager_open(filename);
@@ -305,6 +307,7 @@ Table* db_open(const char* filename) {
     table->num_rows = num_rows;
     return table;
 }
+
 
 ExecuteResult execute_insert(Statement* statement, Table* table) {
     if (table->num_rows >= TABLE_MAX_ROWS) {
