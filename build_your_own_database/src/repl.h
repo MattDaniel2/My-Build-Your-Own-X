@@ -36,6 +36,11 @@ typedef enum {
     EXECUTE_TABLE_FULL,
 } ExecuteResult;
 
+typedef enum {
+    NODE_INTERNAL,
+    NODE_LEAF,
+} NodeType;
+
 typedef struct {
     char* buffer;
     size_t buffer_length;
